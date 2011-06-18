@@ -1,6 +1,15 @@
 from __future__ import division, print_function
 import re
 
+#The next four libraries are necessary for the syllable counter
+import curses 
+from curses.ascii import isdigit 
+import nltk 
+from nltk.corpus import cmudict 
+
+
+
+
 def whitespace_replacer(text):
     '''Replace all characters that are not letters in text with whitespace'''
     #This regex will remove punctuation (except periods), special characters, and numbers
@@ -27,6 +36,12 @@ def average_sentences_per_word(text):
         num_words += len(sentence.split())
     return num_sentences/num_words
 
+
+def average_words_per_sentence(text):
+    return 1/average_sentences_per_word(text)
+
+
+
 def average_letters_per_word(text):
     '''Determine the average number of letters per word in the text'''
     #Create a list of all the words in the text
@@ -37,6 +52,12 @@ def average_letters_per_word(text):
         total_characters += len(word)
     return total_characters/num_words
 
+
+d = cmudict.dict() 
+def count_syllables(word): 
+  return [len(list(y for y in x if isdigit(y[-1]))) for x in d[word.lower()]] 
+
+
 def coleman_liau(text):
     #Formula and notation taken from Wikipedia, by which L is average letters per 100 words, and S is average sentences per 100 words
     lpw = average_letters_per_word(text)
@@ -44,6 +65,15 @@ def coleman_liau(text):
     L = 100 * lpw
     S = 100 * spw
     return .0588 * L - .296 * S - 15.8
+
+
+def flesh_kincaid(text):
+    
+    wps = average_words_per_sentence(text)
+    spw = average_syllables_per_word(text)
+    return .39 * wps + 11.8 * spw - 15.59
+
+
 
 def main():
     pass
